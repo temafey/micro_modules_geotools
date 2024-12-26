@@ -27,8 +27,9 @@ class BoundingBoxTest extends \League\Geotools\Tests\TestCase
      */
     protected $polygon;
 
-    protected function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->polygon = new Polygon;
     }
 
@@ -52,26 +53,23 @@ class BoundingBoxTest extends \League\Geotools\Tests\TestCase
 
     public function testConstructWithPolygon()
     {
-        new BoundingBox(new Polygon);
+        $this->assertInstanceOf(BoundingBox::class, new BoundingBox(new Polygon));
     }
-
 
     public function testConstructWithCoordinate()
     {
-        new BoundingBox(new Coordinate(array(0, 0)));
+        $this->assertInstanceOf(BoundingBox::class, new BoundingBox(new Coordinate(array(0, 0))));
     }
 
     public function testConstructWithNull()
     {
-        new BoundingBox;
+        $this->assertInstanceOf(BoundingBox::class, new BoundingBox);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testConstructWithInvalidArgument()
     {
-        new BoundingBox('string');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->assertInstanceOf(BoundingBox::class, new BoundingBox('string'));
     }
 
     /**

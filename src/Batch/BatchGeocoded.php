@@ -11,6 +11,7 @@
 
 namespace League\Geotools\Batch;
 
+use Exception;
 use Geocoder\Location;
 use Geocoder\Model\Address;
 use Geocoder\Model\Coordinates;
@@ -20,7 +21,7 @@ use Geocoder\Model\Coordinates;
  *
  * @author Antoine Corcy <contact@sbin.dk>
  */
-class BatchGeocoded
+class BatchGeocoded extends Exception
 {
     /**
      * The name of the provider.

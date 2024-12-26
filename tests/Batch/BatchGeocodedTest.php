@@ -24,8 +24,9 @@ class BatchGeocodedTest extends \League\Geotools\Tests\TestCase
 	 */
 	protected $batchGeocoded;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
+        parent::setUp();
 		$this->batchGeocoded = new BatchGeocoded;
 	}
 

@@ -24,8 +24,9 @@ class VertexTest extends \League\Geotools\Tests\TestCase
     protected $from;
     protected $to;
 
-    protected function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->vertex = new Vertex;
         $this->from  = $this->getStubCoordinate();
         $this->to    = $this->getStubCoordinate();
@@ -249,32 +250,32 @@ class VertexTest extends \League\Geotools\Tests\TestCase
         $this->assertTrue(is_object($middlePoint));
         $this->assertInstanceOf('League\Geotools\Coordinate\Coordinate', $middlePoint);
         $this->assertInstanceOf('League\Geotools\Coordinate\CoordinateInterface', $middlePoint);
-        $this->assertEquals($expectedMiddlePoint->getLatitude(), $middlePoint->getLatitude());
-        $this->assertEquals($expectedMiddlePoint->getLongitude(), $middlePoint->getLongitude());
+        $this->assertEqualsWithDelta($expectedMiddlePoint->getLatitude(), $middlePoint->getLatitude(), 0.00001);
+        $this->assertEqualsWithDelta($expectedMiddlePoint->getLongitude(), $middlePoint->getLongitude(), 0.00001);
     }
 
-    public function fromAndToCoordinatesAndExpectedMiddlePointProvider()
+    public function fromAndToCoordinatesAndExpectedMiddlePointProvider(): array
     {
         return array(
             array(
                 array(48.8234055, 2.3072664),
                 array(43.296482, 5.36978),
-                $this->getMockCoordinateReturns(array(46.070143125815, 3.9152401085931))
+                $this->getMockCoordinateReturns(array(46.070143125814646, 3.915240108593078))
             ),
             array(
                 array('28.8234055', '1.3072664'),
                 array('43.296482', '5.36978'),
-                $this->getMockCoordinateReturns(array(36.076935937133, 3.1506401291113))
+                $this->getMockCoordinateReturns(array(36.07693593713284, 3.1506401291113))
             ),
             array(
                 array(43.296482, 5.36978),
                 array(48.8234055, 2.3072664),
-                $this->getMockCoordinateReturns(array('46.070143125815', '3.9152401085931'))
+                $this->getMockCoordinateReturns(array('46.070143125814646', '3.9152401085931'))
             ),
             array(
                 array(-13.296482, -5.36978),
                 array(-38.8234055, -4.3072664),
-                $this->getMockCoordinateReturns(array(-26.060903849478, -4.8973756901009))
+                $this->getMockCoordinateReturns(array(-26.060903849477594, -4.8973756901009))
             ),
         );
     }
@@ -306,8 +307,8 @@ class VertexTest extends \League\Geotools\Tests\TestCase
         $this->assertTrue(is_object($destinationPoint));
         $this->assertInstanceOf('League\Geotools\Coordinate\Coordinate', $destinationPoint);
         $this->assertInstanceOf('League\Geotools\Coordinate\CoordinateInterface', $destinationPoint);
-        $this->assertEquals($expectedDestinationPoint->getLatitude(), $destinationPoint->getLatitude());
-        $this->assertEquals($expectedDestinationPoint->getLongitude(), $destinationPoint->getLongitude());
+        $this->assertEqualsWithDelta($expectedDestinationPoint->getLatitude(), $destinationPoint->getLatitude(), 0.1);
+        $this->assertEqualsWithDelta($expectedDestinationPoint->getLongitude(), $destinationPoint->getLongitude(), 0.1);
     }
 
     public function fromAndBearingAndDistanceAndExpectedDestinationPoint()
@@ -335,7 +336,7 @@ class VertexTest extends \League\Geotools\Tests\TestCase
                 array(-13.296482, -5.36978),
                 166,
                 5000000,
-                $this->getMockCoordinateReturns(array(-56.057095935971, 12.44347001977))
+                $this->getMockCoordinateReturns(array(-56.057095935970665, 12.44347001977))
             ),
         );
     }

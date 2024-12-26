@@ -25,8 +25,9 @@ class MultiPolygonTest extends \League\Geotools\Tests\TestCase
      */
     protected $polygon;
 
-    protected function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->polygon = new Polygon;
     }
 

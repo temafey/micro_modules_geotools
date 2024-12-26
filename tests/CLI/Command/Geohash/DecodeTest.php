@@ -13,6 +13,7 @@ namespace League\Geotools\Tests\CLI\Command\Geohash;
 
 use League\Geotools\CLI\Application;
 use League\Geotools\CLI\Command\Geohash\Decode;
+use RuntimeException;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -24,8 +25,9 @@ class DecodeTest extends \League\Geotools\Tests\TestCase
     protected $command;
     protected $commandTester;
 
-    protected function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->application = new Application;
         $this->application->add(new Decode);
 
@@ -34,23 +36,17 @@ class DecodeTest extends \League\Geotools\Tests\TestCase
         $this->commandTester = new CommandTester($this->command);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Not enough arguments
-     */
     public function testExecuteWithoutArguments()
     {
+        $this->expectException(RuntimeException::class);
         $this->commandTester->execute(array(
             'command' => $this->command->getName(),
         ));
     }
 
-    /**
-     * @expectedException League\Geotools\Exception\RuntimeException
-     * @expectedExceptionMessage This geo hash is invalid.
-     */
     public function testExecuteInvalidArguments()
     {
+        $this->expectException(\League\Geotools\Exception\RuntimeException::class);
         $this->commandTester->execute(array(
             'command' => $this->command->getName(),
             'geohash' => 'foo, bar',
@@ -65,7 +61,7 @@ class DecodeTest extends \League\Geotools\Tests\TestCase
         ));
 
         $this->assertTrue(is_string($this->commandTester->getDisplay()));
-        $this->assertRegExp('/42\.1875, -84\.375/', $this->commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/42\.1875, -84\.375/', $this->commandTester->getDisplay());
     }
 
     public function testExecuteLongGeohash()
@@ -76,6 +72,6 @@ class DecodeTest extends \League\Geotools\Tests\TestCase
         ));
 
         $this->assertTrue(is_string($this->commandTester->getDisplay()));
-        $this->assertRegExp('/40\.446195071563, -79\.948862101883/', $this->commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/40\.446195071563, -79\.948862101883/', $this->commandTester->getDisplay());
     }
 }

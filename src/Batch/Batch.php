@@ -11,12 +11,11 @@
 
 namespace League\Geotools\Batch;
 
-use Geocoder\Geocoder;
 use Geocoder\ProviderAggregator;
 use League\Geotools\Coordinate\CoordinateInterface;
 use League\Geotools\Exception\InvalidArgumentException;
 use Psr\Cache\CacheItemPoolInterface;
-use React\EventLoop\Factory as EventLoopFactory;
+use React\EventLoop\Loop;
 use React\Promise\Deferred;
 
 /**
@@ -256,11 +255,11 @@ class Batch implements BatchInterface
      */
     public function parallel()
     {
-        $loop = EventLoopFactory::create();
-        $computedInParallel = array();
+        $loop = Loop::get();
+        $computedInParallel = [];
 
         foreach ($this->tasks as $task) {
-            $loop->nextTick(function () use ($task, &$computedInParallel) {
+            $loop->futureTick(function () use ($task, &$computedInParallel) {
                 $task()->then(function($result) use (&$computedInParallel) {
                     $computedInParallel[] = $result;
                 }, function ($emptyResult) use (&$computedInParallel) {

@@ -13,7 +13,9 @@ namespace League\Geotools\Tests\CLI\Command\Geohash;
 
 use League\Geotools\CLI\Application;
 use League\Geotools\CLI\Command\Geohash\Encode;
+use League\Geotools\Exception\InvalidArgumentException;
 use League\Geotools\Geohash\Geohash;
+use RuntimeException;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -25,8 +27,9 @@ class EncodeTest extends \League\Geotools\Tests\TestCase
     protected $command;
     protected $commandTester;
 
-    protected function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->application = new Application;
         $this->application->add(new Encode);
 
@@ -35,23 +38,17 @@ class EncodeTest extends \League\Geotools\Tests\TestCase
         $this->commandTester = new CommandTester($this->command);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Not enough arguments
-     */
     public function testExecuteWithoutArguments()
     {
+        $this->expectException(RuntimeException::class);
         $this->commandTester->execute(array(
             'command' => $this->command->getName(),
         ));
     }
 
-    /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage It should be a valid and acceptable ways to write geographic coordinates !
-     */
     public function testExecuteInvalidArguments()
     {
+        $this->expectException(InvalidArgumentException::class);
         $this->commandTester->execute(array(
             'command'    => $this->command->getName(),
             'coordinate' => 'foo, bar',
@@ -67,15 +64,12 @@ class EncodeTest extends \League\Geotools\Tests\TestCase
         ));
 
         $this->assertTrue(is_string($this->commandTester->getDisplay()));
-        $this->assertRegExp('/u09tu800gnqw/', $this->commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/u09tu800gnqw/', $this->commandTester->getDisplay());
     }
 
-    /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage The length should be between 1 and 12.
-     */
     public function testExecuteInvalidLengthOption()
     {
+        $this->expectException(InvalidArgumentException::class);
         $this->commandTester->execute(array(
             'command'    => $this->command->getName(),
             'coordinate' => '48.8234055, 2.3072664',
@@ -92,15 +86,12 @@ class EncodeTest extends \League\Geotools\Tests\TestCase
         ));
 
         $this->assertTrue(is_string($this->commandTester->getDisplay()));
-        $this->assertRegExp('/<value>dppn<\/value>/', $this->commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/<value>dppn<\/value>/', $this->commandTester->getDisplay());
     }
 
-    /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage The length should be between 1 and 12.
-     */
     public function testExecuteWithEmptyLengthOption()
     {
+        $this->expectException(InvalidArgumentException::class);
         $this->commandTester->execute(array(
             'command'    => $this->command->getName(),
             'coordinate' => '40° 26.7717, -79° 56.93172',

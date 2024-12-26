@@ -13,6 +13,8 @@ namespace League\Geotools\Tests\CLI\Command\Geocoder;
 
 use League\Geotools\CLI\Application;
 use League\Geotools\CLI\Command\Geocoder\Reverse;
+use League\Geotools\Exception\InvalidArgumentException;
+use RuntimeException;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -24,8 +26,9 @@ class ReverseTest extends \League\Geotools\Tests\TestCase
     protected $command;
     protected $commandTester;
 
-    protected function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->application = new Application;
         $this->application->add(new Reverse);
 
@@ -34,23 +37,17 @@ class ReverseTest extends \League\Geotools\Tests\TestCase
         $this->commandTester = new CommandTester($this->command);
     }
 
-    /**
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage Not enough arguments
-     */
     public function testExecuteWithoutArguments()
     {
+        $this->expectException(RuntimeException::class);
         $this->commandTester->execute(array(
             'command' => $this->command->getName(),
         ));
     }
 
-    /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage It should be a valid and acceptable ways to write geographic coordinates !
-     */
     public function testExecuteInvalidArguments()
     {
+        $this->expectException(InvalidArgumentException::class);
         $this->commandTester->execute(array(
             'command'    => $this->command->getName(),
             'coordinate' => 'foo, bar',
@@ -67,7 +64,7 @@ class ReverseTest extends \League\Geotools\Tests\TestCase
         ));
 
         $this->assertTrue(is_string($this->commandTester->getDisplay()));
-        $this->assertRegExp('/Avenue Gambetta 1, 75020 Paris/', $this->commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/Avenue Gambetta 1, 75020 Paris/', $this->commandTester->getDisplay());
     }
 
     public function testExecuteReverseWithDefaultProviderAndSocketAdapterAndArguments()
@@ -86,7 +83,7 @@ class ReverseTest extends \League\Geotools\Tests\TestCase
         ));
 
         $this->assertTrue(is_string($this->commandTester->getDisplay()));
-        $this->assertRegExp('/Avenue Gambetta 1, 75020 Paris/', $this->commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/Avenue Gambetta 1, 75020 Paris/', $this->commandTester->getDisplay());
     }
 
     public function testExecuteReverseAgainstOpenStreetMapsProviderWithDefaultAdapterAndDefaultFormatter()
@@ -100,7 +97,7 @@ class ReverseTest extends \League\Geotools\Tests\TestCase
         ));
 
         $this->assertTrue(is_string($this->commandTester->getDisplay()));
-        $this->assertRegExp('/Avenue Gambetta 8, 75020 Paris/', $this->commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/Avenue Gambetta 8, 75020 Paris/', $this->commandTester->getDisplay());
     }
 
     public function testExecuteReverseAgainstOpenStreetMapsProviderWithDefaultAdapterAndFormatter()
@@ -115,7 +112,7 @@ class ReverseTest extends \League\Geotools\Tests\TestCase
         ));
 
         $this->assertTrue(is_string($this->commandTester->getDisplay()));
-        $this->assertRegExp('/Paris, Île-de-France/', $this->commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/Paris, Île-de-France/', $this->commandTester->getDisplay());
     }
 
     public function testExecuteRawOptionAndLocalArgument()

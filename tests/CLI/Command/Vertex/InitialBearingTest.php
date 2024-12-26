@@ -13,6 +13,8 @@ namespace League\Geotools\Tests\CLI\Command\Vertex;
 
 use League\Geotools\CLI\Application;
 use League\Geotools\CLI\Command\Vertex\InitialBearing;
+use League\Geotools\Exception\InvalidArgumentException;
+use RuntimeException;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -24,8 +26,9 @@ class InitialBearingTest extends \League\Geotools\Tests\TestCase
     protected $command;
     protected $commandTester;
 
-    protected function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->application = new Application;
         $this->application->add(new InitialBearing);
 
@@ -34,23 +37,17 @@ class InitialBearingTest extends \League\Geotools\Tests\TestCase
         $this->commandTester = new CommandTester($this->command);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Not enough arguments
-     */
     public function testExecuteWithoutArguments()
     {
+        $this->expectException(RuntimeException::class);
         $this->commandTester->execute(array(
             'command' => $this->command->getName(),
         ));
     }
 
-    /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage It should be a valid and acceptable ways to write geographic coordinates !
-     */
     public function testExecuteInvalidArguments()
     {
+        $this->expectException(InvalidArgumentException::class);
         $this->commandTester->execute(array(
             'command'     => $this->command->getName(),
             'origin'      => 'foo, bar',
@@ -67,15 +64,12 @@ class InitialBearingTest extends \League\Geotools\Tests\TestCase
         ));
 
         $this->assertTrue(is_string($this->commandTester->getDisplay()));
-        $this->assertRegExp('/87/', $this->commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/87/', $this->commandTester->getDisplay());
     }
 
-    /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Please provide an ellipsoid name !
-     */
     public function testExecuteWithEmptyEllipsoidOption()
     {
+        $this->expectException(InvalidArgumentException::class);
         $this->commandTester->execute(array(
             'command'     => $this->command->getName(),
             'origin'      => '40° 26.7717, -79° 56.93172',
@@ -84,12 +78,9 @@ class InitialBearingTest extends \League\Geotools\Tests\TestCase
         ));
     }
 
-    /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage foo ellipsoid does not exist in selected reference ellipsoids !
-     */
     public function testExecuteWithoutAvailableEllipsoidOption()
     {
+        $this->expectException(InvalidArgumentException::class);
         $this->commandTester->execute(array(
             'command'     => $this->command->getName(),
             'origin'      => '40° 26.7717, -79° 56.93172',
@@ -108,6 +99,6 @@ class InitialBearingTest extends \League\Geotools\Tests\TestCase
         ));
 
         $this->assertTrue(is_string($this->commandTester->getDisplay()));
-        $this->assertRegExp('/87/', $this->commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/87/', $this->commandTester->getDisplay());
     }
 }

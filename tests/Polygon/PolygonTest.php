@@ -11,6 +11,7 @@
 
 namespace League\Geotools\Tests\Polygon;
 
+use InvalidArgumentException;
 use League\Geotools\Coordinate\Coordinate;
 use League\Geotools\Polygon\Polygon;
 
@@ -24,48 +25,45 @@ class PolygonTest extends \League\Geotools\Tests\TestCase
      */
     protected $polygon;
 
-    protected function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->polygon = new Polygon;
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testCannotCreatePolygonWithString()
     {
+        $this->expectException(InvalidArgumentException::class);
         new Polygon('foo');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testCannotCreatePolygonWithInteger()
     {
+        $this->expectException(InvalidArgumentException::class);
         new Polygon(123);
     }
 
-    public function polygonCoordinates()
+    public static function polygonCoordinates(): array
     {
-        return array(
-            array(
-                'polygonCoordinates' => array(
-                    array(48.9675969, 1.7440796),
-                    array(48.4711003, 2.5268555),
-                    array(48.9279131, 3.1448364),
-                    array(49.3895245, 2.6119995)
-                ),
-            ),
-        );
+        return [
+            [
+                'polygonCoordinates' => [
+                    [48.9675969, 1.7440796],
+                    [48.4711003, 2.5268555],
+                    [48.9279131, 3.1448364],
+                    [49.3895245, 2.6119995]
+                ],
+            ],
+        ];
     }
 
     /**
      * @dataProvider polygonCoordinates
      * @param array $polygonCoordinates
      */
-    public function testContructor($polygonCoordinates)
+    public function testConstructor($polygonCoordinates)
     {
-        new Polygon($polygonCoordinates);
+        $this->assertInstanceOf(Polygon::class, new Polygon($polygonCoordinates));
     }
 
     /**

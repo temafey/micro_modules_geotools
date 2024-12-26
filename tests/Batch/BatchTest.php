@@ -11,14 +11,17 @@
 
 namespace League\Geotools\Tests\Batch;
 
-use Cache\Adapter\PHPArray\ArrayCachePool;
 use Geocoder\Collection;
 use Geocoder\Provider\AbstractProvider;
 use Geocoder\Provider\Provider as ProviderInterface;
 use Geocoder\Query\GeocodeQuery;
 use Geocoder\Query\ReverseQuery;
 use League\Geotools\Batch\Batch;
+use League\Geotools\Batch\BatchGeocoded;
+use League\Geotools\Exception\InvalidArgumentException;
 use Psr\Cache\CacheItemPoolInterface;
+use RuntimeException;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 /**
  * @author Antoine Corcy <contact@sbin.dk>
@@ -32,8 +35,9 @@ class BatchTest extends \League\Geotools\Tests\TestCase
     protected $values;
     protected $coordinates;
 
-    protected function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->data = array(
             'latitude'  => 48.8234055,
             'longitude' => 2.3072664,
@@ -69,7 +73,7 @@ class BatchTest extends \League\Geotools\Tests\TestCase
 
     public function testConstructorShouldAcceptGeocoderInterface()
     {
-        new TestableBatch($this->getStubGeocoder());
+        $this->assertInstanceOf(TestableBatch::class, new TestableBatch($this->getStubGeocoder()));
     }
 
     public function testConstructorShouldSetGeocoderInterface()
@@ -113,12 +117,11 @@ class BatchTest extends \League\Geotools\Tests\TestCase
     }
 
     /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage The argument should be a string or an array of strings to geocode.
      * @dataProvider invalidValuesProvider
      */
     public function testGeocodeShouldThrowInvalidArgumentException($values)
     {
+        $this->expectException(InvalidArgumentException::class);
         $batch = new TestableBatch($this->geocoder);
         $batch->geocode($values);
     }
@@ -168,17 +171,16 @@ class BatchTest extends \League\Geotools\Tests\TestCase
     }
 
     /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage The argument should be a Coordinate instance or an array of Coordinate instances to reverse.
      * @dataProvider coordinatesProvider
      */
     public function testReverseShouldThrowInvalidArgumentException($coordinates)
     {
+        $this->expectException(InvalidArgumentException::class);
         $batch = new TestableBatch($this->geocoder);
         $batch->reverse($coordinates);
     }
 
-    public function coordinatesProvider()
+    public static function coordinatesProvider(): array
     {
         return array(
             array(0),
@@ -534,7 +536,7 @@ class BatchTest extends \League\Geotools\Tests\TestCase
         $this->assertCount(count($this->providers) * count($this->values), $resultComputedInSerie);
         foreach ($resultComputedInSerie as $providerResult) {
             $this->assertTrue(is_object($providerResult));
-            $this->assertInstanceOf('League\Geotools\Batch\BatchGeocoded', $providerResult);
+            $this->assertInstanceOf(BatchGeocoded::class, $providerResult);
             $this->assertEmpty($providerResult->getLatitude());
             $this->assertEmpty($providerResult->getLongitude());
             $this->assertContains($providerResult->getProviderName(), $this->providersName);
@@ -674,7 +676,7 @@ class BatchTest extends \League\Geotools\Tests\TestCase
         $this->assertCount(count($this->providers) * count($this->coordinates), $resultComputedInSerie);
         foreach ($resultComputedInSerie as $providerResult) {
             $this->assertTrue(is_object($providerResult));
-            $this->assertInstanceOf('League\Geotools\Batch\BatchGeocoded', $providerResult);
+            $this->assertInstanceOf(BatchGeocoded::class, $providerResult);
             $this->assertEmpty($providerResult->getLatitude());
             $this->assertEmpty($providerResult->getLongitude());
             $this->assertContains($providerResult->getProviderName(), $this->providersName);
@@ -735,19 +737,16 @@ class BatchTest extends \League\Geotools\Tests\TestCase
         }
     }
 
-    /**
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage booooooooooo!
-     */
     public function testSeriesShouldThrowException()
     {
+        $this->expectException(RuntimeException::class);
         $batch = new TestableBatch($this->geocoder);
         $batch->setTasks($tasks = array(
             function () {
                 return \React\Promise\resolve('foo');
             },
             function () {
-                throw new \RuntimeException('booooooooooo!');
+                throw new RuntimeException('booooooooooo!');
             },
             function () {
                 return \React\Promise\resolve('bar');
@@ -755,31 +754,28 @@ class BatchTest extends \League\Geotools\Tests\TestCase
         ))->geocode('foo')->serie();
     }
 
-    /**
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage booooooooooo!
-     */
     public function testParallelShouldThrowException()
     {
+        $this->expectException(RuntimeException::class);
         $called = 0;
 
         $batch = new TestableBatch($this->geocoder);
-        $batch->setTasks(array(
+        $batch->setTasks([
             function () {
-                throw new \RuntimeException('booooooooooo!');
+                throw new RuntimeException('booooooooooo!');
             },
             function () use (&$called) {
                 $called++;
                 return \React\Promise\resolve('foo');
             },
             function () {
-                throw new \RuntimeException('booooooooooo!');
+                throw new RuntimeException('booooooooooo!');
             },
             function () use (&$called) {
                 $called++;
                 return \React\Promise\resolve('bar');
             },
-        ))->geocode('foo')->parallel();
+        ])->geocode('foo')->parallel();
 
         $this->assertSame(2, $called);
     }
@@ -813,7 +809,7 @@ class BatchTest extends \League\Geotools\Tests\TestCase
     public function testSetCacheShouldReturnBatchInterface()
     {
         $batch          = new TestableBatch($this->geocoder);
-        $batchWithCache = $batch->setCache(new ArrayCachePool());
+        $batchWithCache = $batch->setCache(new ArrayAdapter());
 
         $this->assertTrue(is_object($batchWithCache));
         $this->assertInstanceOf('League\Geotools\Batch\Batch', $batchWithCache);

@@ -36,7 +36,7 @@ class Application extends \Symfony\Component\Console\Application
     /**
      * {@inheritdoc}
      */
-    public function getHelp()
+    public function getHelp(): string
     {
         return $this->logo . parent::getHelp();
     }
@@ -44,8 +44,8 @@ class Application extends \Symfony\Component\Console\Application
     /**
      * {@inheritdoc}
      */
-    public function run(InputInterface $input = null, OutputInterface $output = null)
+    public function run(InputInterface $input = null, OutputInterface $output = null): int
     {
-        parent::run($input, new ConsoleOutput);
+        return parent::run($input, new ConsoleOutput);
     }
 }

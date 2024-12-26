@@ -11,6 +11,7 @@
 
 namespace League\Geotools\Tests;
 
+use Exception;
 use Geocoder\Model\Address;
 use Geocoder\Model\AddressCollection;
 use Geocoder\ProviderAggregator;
@@ -23,6 +24,11 @@ use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 
 /**
  * @author Antoine Corcy <contact@sbin.dk>
+ * @backupStaticAttributes disabled
+ * @convertErrorsToExceptions enabled
+ * @convertNoticesToExceptions enabled
+ * @convertWarningsToExceptions enabled
+ * @syntaxCheck disabled
  */
 abstract class TestCase extends PHPUnitTestCase
 {
@@ -93,11 +99,11 @@ abstract class TestCase extends PHPUnitTestCase
         $mock
             ->expects($this->any())
             ->method('geocode')
-            ->will($this->throwException(new \Exception));
+            ->will($this->throwException(new Exception));
         $mock
             ->expects($this->any())
             ->method('reverse')
-            ->will($this->throwException(new \Exception));
+            ->will($this->throwException(new Exception));
 
         return $mock;
     }

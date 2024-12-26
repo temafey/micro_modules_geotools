@@ -13,6 +13,8 @@ namespace League\Geotools\Tests\CLI\Command\Distance;
 
 use League\Geotools\CLI\Application;
 use League\Geotools\CLI\Command\Distance\Flat;
+use League\Geotools\Exception\InvalidArgumentException;
+use RuntimeException;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -24,8 +26,9 @@ class FlatTest extends \League\Geotools\Tests\TestCase
     protected $command;
     protected $commandTester;
 
-    protected function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->application = new Application;
         $this->application->add(new Flat);
 
@@ -34,23 +37,17 @@ class FlatTest extends \League\Geotools\Tests\TestCase
         $this->commandTester = new CommandTester($this->command);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Not enough arguments
-     */
     public function testExecuteWithoutArguments()
     {
+        $this->expectException(RuntimeException::class);
         $this->commandTester->execute(array(
             'command' => $this->command->getName(),
         ));
     }
 
-    /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage It should be a valid and acceptable ways to write geographic coordinates !
-     */
     public function testExecuteInvalidArguments()
     {
+        $this->expectException(InvalidArgumentException::class);
         $this->commandTester->execute(array(
             'command'     => $this->command->getName(),
             'origin'      => 'foo, bar',
@@ -67,7 +64,7 @@ class FlatTest extends \League\Geotools\Tests\TestCase
         ));
 
         $this->assertTrue(is_string($this->commandTester->getDisplay()));
-        $this->assertRegExp('/4690203\.0702905/', $this->commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/4690203\.0702905/', $this->commandTester->getDisplay());
     }
 
     public function testExecuteWithKmOption()
@@ -80,7 +77,7 @@ class FlatTest extends \League\Geotools\Tests\TestCase
         ));
 
         $this->assertTrue(is_string($this->commandTester->getDisplay()));
-        $this->assertRegExp('/4690\.2030702905/', $this->commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/4690\.2030702905/', $this->commandTester->getDisplay());
     }
 
     public function testExecuteWithMileOption()
@@ -93,7 +90,7 @@ class FlatTest extends \League\Geotools\Tests\TestCase
         ));
 
         $this->assertTrue(is_string($this->commandTester->getDisplay()));
-        $this->assertRegExp('/2914\.3570736216/', $this->commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/2914\.3570736216/', $this->commandTester->getDisplay());
     }
 
     public function testExecuteWithFtOption()
@@ -106,15 +103,12 @@ class FlatTest extends \League\Geotools\Tests\TestCase
         ));
 
         $this->assertTrue(is_string($this->commandTester->getDisplay()));
-        $this->assertRegExp('/15387805\.348722/', $this->commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/15387805\.348722/', $this->commandTester->getDisplay());
     }
 
-    /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Please provide an ellipsoid name !
-     */
     public function testExecuteWithEmptyEllipsoidOption()
     {
+        $this->expectException(InvalidArgumentException::class);
         $this->commandTester->execute(array(
             'command'     => $this->command->getName(),
             'origin'      => '40° 26.7717, -79° 56.93172',
@@ -123,12 +117,9 @@ class FlatTest extends \League\Geotools\Tests\TestCase
         ));
     }
 
-    /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage foo ellipsoid does not exist in selected reference ellipsoids !
-     */
     public function testExecuteWithoutAvailableEllipsoidOption()
     {
+        $this->expectException(InvalidArgumentException::class);
         $this->commandTester->execute(array(
             'command'     => $this->command->getName(),
             'origin'      => '40° 26.7717, -79° 56.93172',
@@ -147,6 +138,6 @@ class FlatTest extends \League\Geotools\Tests\TestCase
         ));
 
         $this->assertTrue(is_string($this->commandTester->getDisplay()));
-        $this->assertRegExp('/4690217\.0420619/', $this->commandTester->getDisplay());
+        $this->assertMatchesRegularExpression('/4690217\.0420619/', $this->commandTester->getDisplay());
     }
 }

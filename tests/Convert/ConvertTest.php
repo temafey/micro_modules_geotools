@@ -21,7 +21,7 @@ class ConvertTest extends \League\Geotools\Tests\TestCase
 {
     public function testConstructorShouldAcceptCoordinateInterface()
     {
-        new TestableConvert($this->getStubCoordinate());
+        $this->assertInstanceOf(TestableConvert::class, new TestableConvert($this->getStubCoordinate()));
     }
 
     public function testConstructorShouldSetCoordinateInterface()
@@ -126,7 +126,7 @@ class ConvertTest extends \League\Geotools\Tests\TestCase
                 '40°26.7717″N 79°56.93172W'
             ),
             array(
-                '40.446388888889, -79.976666666667',
+                '40.446388888889, -79.97666666666667',
                 '%P%D° %N%L %p%d° %n%l',
                 '40° 26.78333N -79° 58.6W'
             ),

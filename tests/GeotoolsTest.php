@@ -22,8 +22,9 @@ class GeotoolsTest extends TestCase
 {
     protected $geotools;
 
-    protected function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
         $this->geotools = new Geotools();
     }
 

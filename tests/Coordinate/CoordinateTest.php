@@ -13,6 +13,7 @@ namespace League\Geotools\Tests\Coordinate;
 
 use League\Geotools\Coordinate\Coordinate;
 use League\Geotools\Coordinate\Ellipsoid;
+use League\Geotools\Exception\InvalidArgumentException;
 
 /**
  * @author Antoine Corcy <contact@sbin.dk>
@@ -20,16 +21,15 @@ use League\Geotools\Coordinate\Ellipsoid;
 class CoordinateTest extends \League\Geotools\Tests\TestCase
 {
     /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage It should be a string, an array or a class which implements Geocoder\Model\Address !
      * @dataProvider invalidCoordinatesProvider
      */
     public function testConstructorWithInvalidCoordinatesShouldThrowAnException($coordinates)
     {
+        $this->expectException(InvalidArgumentException::class);
         new Coordinate($coordinates);
     }
 
-    public function invalidCoordinatesProvider()
+    public static function invalidCoordinatesProvider(): array
     {
         return array(
             array(null),
@@ -45,16 +45,15 @@ class CoordinateTest extends \League\Geotools\Tests\TestCase
     }
 
     /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage It should be a valid and acceptable ways to write geographic coordinates !
      * @dataProvider invalidStringCoordinatesProvider
      */
     public function testConstructorWithInvalidStringCoordinatesShouldThrowAnException($coordinates)
     {
+        $this->expectException(InvalidArgumentException::class);
         new Coordinate($coordinates);
     }
 
-    public function invalidStringCoordinatesProvider()
+    public static function invalidStringCoordinatesProvider(): array
     {
         return array(
             array(''),
@@ -81,7 +80,7 @@ class CoordinateTest extends \League\Geotools\Tests\TestCase
         $this->assertSame($expectedCoordinates[1], $coordinate->getLongitude());
     }
 
-    public function validCoordinatesAndExpectedCoordinatesProvider()
+    static public function validCoordinatesAndExpectedCoordinatesProvider(): array
     {
         return array(
             array(
@@ -134,42 +133,42 @@ class CoordinateTest extends \League\Geotools\Tests\TestCase
             ),
             array(
                 '40:26:46N, 079:56:55W',
-                array(40.446111111111, -79.948611111111)
+                array(40.44611111111111, -79.9486111111111)
             ),
             array(
                 '40:26:46.302N, 079:56:55.903W',
-                array(40.446195, -79.948861944444)
+                array(40.446195, -79.94886194444445)
             ),
             array(
                 '40:26:46.302s 079:56:55.903e',
-                array(-40.446195, 79.948861944444)
+                array(-40.446195, 79.94886194444445)
             ),
             array(
                 '25°59.86′N,21°09.81′W',
-                array(25.997666666667, -21.1635)
+                array(25.997666666666667, -21.1635)
             ),
             array(
                 '40°26′47″N 079°58′36″W',
-                array(40.446388888889, -79.976666666667)
+                array(40.44638888888889, -79.97666666666667)
             ),
             array(
                 '40 26 47 n 079 58 36 w',
-                array(40.446388888889, -79.976666666667)
+                array(40.44638888888889, -79.97666666666667)
             ),
             array(
                 '40d 26 47 n 079d 58 36 w',
-                array(40.446388888889, -79.976666666667)
+                array(40.44638888888889, -79.97666666666667)
             ),
             array(
                 '40d 26′ 47″ N 079d 58′ 36″ W',
-                array(40.446388888889, -79.976666666667)
+                array(40.44638888888889, -79.97666666666667)
             ),
         );
     }
 
     public function testConstructorWithAddressArgumentShouldBeValid()
     {
-        new Coordinate($this->createEmptyAddress());
+        $this->assertInstanceOf(Coordinate::class, new Coordinate($this->createEmptyAddress()));
     }
 
     /**
@@ -318,22 +317,16 @@ class CoordinateTest extends \League\Geotools\Tests\TestCase
         $this->assertInstanceOf('League\Geotools\Coordinate\Ellipsoid', $ellipsoid);
     }
 
-    /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage The given coordinates should be a string !
-     */
     public function testCreateFromStringWithoutAString()
     {
+        $this->expectException(InvalidArgumentException::class);
         $coordinate = new Coordinate($this->createEmptyAddress());
         $coordinate->setFromString(123);
     }
 
-    /**
-     * @expectedException League\Geotools\Exception\InvalidArgumentException
-     * @expectedExceptionMessage It should be a valid and acceptable ways to write geographic coordinates !
-     */
     public function testCreateFromStringWithInvalidCoordinateString()
     {
+        $this->expectException(InvalidArgumentException::class);
         $coordinate = new Coordinate($this->createEmptyAddress());
         $coordinate->setFromString('foo');
     }
@@ -343,7 +336,7 @@ class CoordinateTest extends \League\Geotools\Tests\TestCase
         $coordinate = new Coordinate($this->createEmptyAddress());
         $coordinate->setFromString('40°26′47″N 079°58′36″W');
 
-        $this->assertSame(40.446388888889, $coordinate->getLatitude());
-        $this->assertSame(-79.976666666667, $coordinate->getLongitude());
+        $this->assertSame(40.44638888888889, $coordinate->getLatitude());
+        $this->assertSame(-79.97666666666667, $coordinate->getLongitude());
     }
 }

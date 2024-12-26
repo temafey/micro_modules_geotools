@@ -14,6 +14,7 @@ namespace League\Geotools\CLI\Command\Distance;
 use League\Geotools\Coordinate\Coordinate;
 use League\Geotools\Coordinate\Ellipsoid;
 use League\Geotools\Geotools;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -24,7 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @author Antoine Corcy <contact@sbin.dk>
  */
-class Vincenty extends \Symfony\Component\Console\Command\Command
+class Vincenty extends Command
 {
     protected function configure()
     {
@@ -50,7 +51,7 @@ EOT
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ellipsoid = Ellipsoid::createFromName($input->getOption('ellipsoid'));
         $from      = new Coordinate($input->getArgument('origin'), $ellipsoid);
