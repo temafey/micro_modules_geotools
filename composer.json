@@ -1,5 +1,5 @@
 {
-    "name"        : "league/geotools",
+    "name"        : "micro-module/geotools",
     "type"        : "library",
     "description" : "Geo-related tools PHP 7.3+ library",
     "keywords"    : ["geotools", "geometry", "geocoder", "geocoding", "geoip", "bounds", "distance", "batch", "async", "geohash", "geolocation", "latlong", "latitude", "longitude"],
